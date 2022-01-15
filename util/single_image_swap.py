@@ -29,7 +29,7 @@ def single_image_swap(image_path, id_vector, swap_model, detect_model, save_path
         net = None
 
     image = cv2.imread(image_path)
-    result_path = os.path.join(save_path, 'result.jpg')
+    result_path = str(os.path.join(save_path, 'result.jpg'))
     detect_results = detect_model.get(image, crop_size)
 
     if detect_results is not None:
@@ -45,7 +45,7 @@ def single_image_swap(image_path, id_vector, swap_model, detect_model, save_path
             swap_result_list.append(swap_result)
             frame_align_crop_tenor_list.append(frame_align_crop_tenor)
 
-        reverse2wholeimage(frame_align_crop_tenor_list, swap_result_list, frame_mat_list, crop_size, image, result_path, False, pasring_model = net, use_mask = use_mask, norm = spNorm)
+        reverse2wholeimage(frame_align_crop_tenor_list, swap_result_list, frame_mat_list, crop_size, image, False, result_path, True, net, spNorm, use_mask)
 
     else:
         return
