@@ -1,12 +1,9 @@
 import os 
 import cv2
-import glob
 import torch
-import shutil
 import numpy as np
 from tqdm import tqdm
 from util.reverse2original import reverse2wholeimage
-from util.add_watermark import watermark_image
 from util.norm import SpecificNorm
 from parsing_model.model import BiSeNet
 
@@ -29,7 +26,6 @@ def single_image_swap(image_path, id_vector, swap_model, detect_model, save_path
         net = None
 
     image = cv2.imread(image_path)
-    result_path = str(os.path.join(save_path, 'result.jpg'))
     detect_results = detect_model.get(image, crop_size)
 
     if detect_results is not None:
@@ -40,12 +36,10 @@ def single_image_swap(image_path, id_vector, swap_model, detect_model, save_path
         for frame_align_crop in frame_align_crop_list:
             frame_align_crop_tenor = _totensor(cv2.cvtColor(frame_align_crop,cv2.COLOR_BGR2RGB))[None,...].cuda()
             swap_result = swap_model(None, frame_align_crop_tenor, id_vector, None, True)[0]
-
-            cv2.imwrite(result_path, image)
             swap_result_list.append(swap_result)
             frame_align_crop_tenor_list.append(frame_align_crop_tenor)
 
-        reverse2wholeimage(frame_align_crop_tenor_list, swap_result_list, frame_mat_list, crop_size, image, False, result_path, True, net, spNorm, use_mask)
+        reverse2wholeimage(frame_align_crop_tenor_list, swap_result_list, frame_mat_list, crop_size, image, False, save_path, True, net, spNorm, use_mask)
 
     else:
         return
